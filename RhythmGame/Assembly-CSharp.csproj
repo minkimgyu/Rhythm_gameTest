@@ -63,8 +63,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Script\CenterFrame.cs" />
+    <Compile Include="Assets\Script\Controller\PlayerController.cs" />
+    <Compile Include="Assets\Script\Manager\ComboManager.cs" />
+    <Compile Include="Assets\Script\Manager\EffectManager.cs" />
+    <Compile Include="Assets\Script\Manager\ScoreManager.cs" />
+    <Compile Include="Assets\Script\Manager\TimingManager.cs" />
     <Compile Include="Assets\Script\Note.cs" />
     <Compile Include="Assets\Script\NoteManager.cs" />
+    <Compile Include="Assets\Script\ObjectPool.cs" />
     <Reference Include="UnityEngine">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.4.4f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
@@ -619,6 +625,9 @@
     </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>C:/Users/김민규/OneDrive/문서/Git/Rhythm_game/Rhythm_gameTest/RhythmGame/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.2D.Sprite.Editor">
+      <HintPath>C:/Users/김민규/OneDrive/문서/Git/Rhythm_game/Rhythm_gameTest/RhythmGame/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup></ItemGroup>
