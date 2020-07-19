@@ -48,4 +48,8 @@ public class ScoreManager : MonoBehaviour
         myAnim.SetTrigger(animScoreUp);
     }
 
+    public int GetCurrentScore()
+    {
+        return currentScore;
+    }
 }

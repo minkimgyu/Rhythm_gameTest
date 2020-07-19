@@ -6,7 +6,8 @@ public class NoteManager : MonoBehaviour
 {
     public int bpm = 0; // 1분당 비트 수
     double currentTime = 0f;
-    int ran = 0;
+
+    bool noteActive = true;
 
     [SerializeField] Transform tfNoteApper = null;
 
@@ -24,18 +25,19 @@ public class NoteManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        currentTime += Time.deltaTime;
-        ran += 1;
-
-        if (currentTime >= 60d / bpm && ran % 10 == 5)
+        if (noteActive)
         {
-            GameObject t_note = ObjectPool.instance.noteQueue.Dequeue();
-            t_note.transform.position = tfNoteApper.position;
-            t_note.SetActive(true);
-            theTimingManager.boxNoteList.Add(t_note);
-            currentTime -= 60d / bpm; // --> 조금의 시간이 지나가기 때문에 이걸 0으로 초기화하면 안 됨
-        }
+            currentTime += Time.deltaTime;
 
+            if (currentTime >= 60d / bpm)
+            {
+                GameObject t_note = ObjectPool.instance.noteQueue.Dequeue();
+                t_note.transform.position = tfNoteApper.position;
+                t_note.SetActive(true);
+                theTimingManager.boxNoteList.Add(t_note);
+                currentTime -= 60d / bpm; // --> 조금의 시간이 지나가기 때문에 이걸 0으로 초기화하면 안 됨
+            }
+        }
     }
 
 
@@ -45,6 +47,7 @@ public class NoteManager : MonoBehaviour
         {
             if (collision.GetComponent<Note>().GetNoteFlag())
             {
+                theTimingManager.MissRecord();
                 theEffectManager.JudgementEffect(4);
                 theComboManager.ResetCombo();
             }
@@ -53,6 +56,16 @@ public class NoteManager : MonoBehaviour
 
             ObjectPool.instance.noteQueue.Enqueue(collision.gameObject);
             collision.gameObject.SetActive(false);
+        }
+    }
+
+    public void RemoveNote()
+    {
+        noteActive = false;
+        for (int i = 0; i < theTimingManager.boxNoteList.Count; i++)
+        {
+            theTimingManager.boxNoteList[i].SetActive(false);
+            ObjectPool.instance.noteQueue.Enqueue(theTimingManager.boxNoteList[i]);
         }
     }
 }

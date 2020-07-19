@@ -6,6 +6,8 @@ public class TimingManager : MonoBehaviour
 {
     public List<GameObject> boxNoteList = new List<GameObject>();
 
+    int[] judgementRecord = new int[5];
+
     [SerializeField] Transform Center = null;
     [SerializeField] RectTransform[] timingRect = null;
     Vector2[] timingBoxs = null;
@@ -13,13 +15,17 @@ public class TimingManager : MonoBehaviour
     EffectManager theEffect = null;
     ScoreManager theScore = null;
     ComboManager theComboManager = null;
+    StageManager theStageManager = null;
+    PlayerController thePlayerController = null;
 
     // Start is called before the first frame update
     void Start()
     {
         theEffect = FindObjectOfType<EffectManager>();
         theScore = FindObjectOfType<ScoreManager>();
-        theComboManager = FindObjectOfType<ComboManager>(); 
+        theComboManager = FindObjectOfType<ComboManager>();
+        theStageManager = FindObjectOfType<StageManager>();
+        thePlayerController = FindObjectOfType<PlayerController>();
 
         timingBoxs = new Vector2[timingRect.Length];
 
@@ -31,7 +37,7 @@ public class TimingManager : MonoBehaviour
         }
     }
 
-    public void CheckTiming()
+    public bool CheckTiming()
     {
         for (int i = 0; i < boxNoteList.Count; i++)
         {
@@ -48,13 +54,52 @@ public class TimingManager : MonoBehaviour
                         theEffect.NoteHitEffect();
                     theEffect.JudgementEffect(j);
 
-                    theScore.IncreaseScore(j);
-                    return;
+                    if(CheckCanNextPlate())
+                    {
+                        theScore.IncreaseScore(j); // 점수 증가
+                        theStageManager.ShowNextPlate(); // 판 생성
+                        judgementRecord[j]++;
+                    }
+                    else
+                    {
+                        theEffect.JudgementEffect(5);
+                    }
+                    return true;
                 }
             }
         }
 
         theComboManager.ResetCombo();
         theEffect.JudgementEffect(timingBoxs.Length);
+        MissRecord();
+        return false;
+    }
+
+    public int[] GetJudgementRecord()
+    {
+        return judgementRecord;
+    }
+
+    public void MissRecord()
+    {
+        judgementRecord[4]++;
+    }
+
+    bool CheckCanNextPlate()
+    {
+        if (Physics.Raycast(thePlayerController.destPos, Vector3.down, out RaycastHit t_hitInfo, 1.1f))
+        {
+            if (t_hitInfo.transform.CompareTag("BasicPlate"))
+            {
+                BasicPlate t_plate = t_hitInfo.transform.GetComponent<BasicPlate>();
+                if (t_plate.flag)
+                {
+                    t_plate.flag = false;
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
