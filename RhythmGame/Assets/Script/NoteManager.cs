@@ -7,7 +7,6 @@ public class NoteManager : MonoBehaviour
     public int bpm = 0; // 1분당 비트 수
     double currentTime = 0f;
 
-    bool noteActive = true;
 
     [SerializeField] Transform tfNoteApper = null;
 
@@ -25,7 +24,7 @@ public class NoteManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (noteActive)
+        if (GameManager.instance.isStartGame)
         {
             currentTime += Time.deltaTime;
 
@@ -61,11 +60,14 @@ public class NoteManager : MonoBehaviour
 
     public void RemoveNote()
     {
-        noteActive = false;
+        GameManager.instance.isStartGame = false;
+
         for (int i = 0; i < theTimingManager.boxNoteList.Count; i++)
         {
             theTimingManager.boxNoteList[i].SetActive(false);
             ObjectPool.instance.noteQueue.Enqueue(theTimingManager.boxNoteList[i]);
         }
+
+        theTimingManager.boxNoteList.Clear();
     }
 }

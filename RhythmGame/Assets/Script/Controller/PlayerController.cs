@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
     TimingManager theTimingManager;
     CameraController theCam;
     Rigidbody myRigid;
+    StatusManager theStatus;
 
     // Start is called before the first frame update
     void Start()
@@ -34,25 +35,43 @@ public class PlayerController : MonoBehaviour
         theTimingManager = FindObjectOfType<TimingManager>();
         theCam = FindObjectOfType<CameraController>();
         myRigid = GetComponentInChildren<Rigidbody>();
+        theStatus = FindObjectOfType<StatusManager>();
         originPos = transform.position;
+    }
+
+    public void Initialized()
+    {
+        Vector3 vecZero = Vector3.zero;
+
+        transform.position = vecZero;
+        destPos = vecZero;
+        realCube.localPosition = vecZero;
+        canMove = true;
+        s_canPresskey = true;
+        isFalling = false;
+        myRigid.useGravity = false;
+        myRigid.isKinematic = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        CheckFalling();
-
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.W))
+        if (GameManager.instance.isStartGame)
         {
-            if (canMove && s_canPresskey && !isFalling)
+            CheckFalling();
+
+            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.W))
             {
-                Calc();
-                if (theTimingManager.CheckTiming())
+                if (canMove && s_canPresskey && !isFalling)
                 {
-                    StartAction();
+                    Calc();
+                    if (theTimingManager.CheckTiming())
+                    {
+                        StartAction();
+                    }
                 }
+
             }
-            
         }
     }
 
@@ -137,12 +156,18 @@ public class PlayerController : MonoBehaviour
 
     public void ResetFalling()
     {
-        isFalling = false;
-        myRigid.useGravity = false;
-        myRigid.isKinematic = true;
+        theStatus.DecreaseHp(1);
+        AudioManager.instance.PlaySFX("Falling");
 
-        // 큐브 둘 다 원점으로 보내줌
-        transform.position = originPos;
-        realCube.localPosition = new Vector3(0, 0, 0);
+        if (!theStatus.IsDead())
+        {
+            isFalling = false;
+            myRigid.useGravity = false;
+            myRigid.isKinematic = true;
+
+            // 큐브 둘 다 원점으로 보내줌
+            transform.position = originPos;
+            realCube.localPosition = new Vector3(0, 0, 0);
+        }
     }
 }

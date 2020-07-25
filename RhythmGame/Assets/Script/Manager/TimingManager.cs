@@ -17,15 +17,19 @@ public class TimingManager : MonoBehaviour
     ComboManager theComboManager = null;
     StageManager theStageManager = null;
     PlayerController thePlayerController = null;
+    StatusManager theStatusManager;
+    AudioManager theAudioManager;
 
     // Start is called before the first frame update
     void Start()
     {
+        theAudioManager = AudioManager.instance;
         theEffect = FindObjectOfType<EffectManager>();
         theScore = FindObjectOfType<ScoreManager>();
         theComboManager = FindObjectOfType<ComboManager>();
         theStageManager = FindObjectOfType<StageManager>();
         thePlayerController = FindObjectOfType<PlayerController>();
+        theStatusManager = FindObjectOfType<StatusManager>();
 
         timingBoxs = new Vector2[timingRect.Length];
 
@@ -59,11 +63,15 @@ public class TimingManager : MonoBehaviour
                         theScore.IncreaseScore(j); // 점수 증가
                         theStageManager.ShowNextPlate(); // 판 생성
                         judgementRecord[j]++;
+                        theStatusManager.CheckShield();
                     }
                     else
                     {
                         theEffect.JudgementEffect(5);
                     }
+
+                    theAudioManager.PlaySFX("Clap");
+
                     return true;
                 }
             }
@@ -83,6 +91,15 @@ public class TimingManager : MonoBehaviour
     public void MissRecord()
     {
         judgementRecord[4]++;
+        theStatusManager.ResetShieldCombo();
+    }
+
+    public void Initialized()
+    {
+        for (int i = 0; i < judgementRecord.Length; i++)
+        {
+            judgementRecord[i] = 0;
+        }
     }
 
     bool CheckCanNextPlate()

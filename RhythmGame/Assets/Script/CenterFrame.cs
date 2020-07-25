@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class CenterFrame : MonoBehaviour
 {
-    AudioSource myAudio;
     bool musicStart = false;
 
-    private void Start()
+    public string bgmName = "";
+
+    public void ResetMusic()
     {
-        myAudio = GetComponent<AudioSource>();
+        musicStart = false;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -18,7 +19,7 @@ public class CenterFrame : MonoBehaviour
         {
             if (collision.CompareTag("Note"))
             {
-                myAudio.Play();
+                AudioManager.instance.PlayBGM(bgmName);
                 musicStart = true;
             }
         }
